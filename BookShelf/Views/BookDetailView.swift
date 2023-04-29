@@ -9,74 +9,65 @@ import SwiftUI
 
 struct BookDetailView: View {
     
+    @EnvironmentObject var model : BookViewModel
     @State private var rateSelection = 1
     
-    var bookName: String
-    var bookImage: String
-    init(bookName: String, bookImage: String) {
-        
-        self.bookName = bookName
-        self.bookImage = bookImage
-    }
+    var book: Book
     
     var body: some View {
         
-      
-            VStack{
-                Text("\(bookName)")
-                    .font(.title)
-                    .bold()
-                    .padding(.top)
-                    .padding(.bottom,-20)
-                Text("Read Now")
-                    .font(.title2)
-                    .italic()
-                    .padding(.top)
-                    .padding(.bottom,-40)
+        VStack(spacing:20){
+            
+            NavigationLink(destination: BookContentView(content: book.content), label: {
                 
-                GeometryReader{ geo in
-                    ZStack{
-                        Rectangle()
-                        Image("\(bookImage)")
-                            .resizable()
-                            .aspectRatio( contentMode: .fill)
-                            .clipped()
-                    }
-                    .frame(width: geo.size.width - 100 , height:  geo.size.height - 100 )
-                    .offset(x:50, y:80)
-                    .foregroundColor(.black)
-                }
                 VStack{
-                    Text("Mark for Later!")
-                        .bold()
-                        .padding(.bottom, 10)
-                    Image(systemName: "star")
-                        .foregroundColor(.yellow)
-                }
-                VStack{
-                    Text("Rate \(bookName)")
-                        .padding(.top,20)
-                        .padding(.bottom,-10)
-                    Picker("", selection: $rateSelection){
-                        Text("1").tag(1)
-                        Text("2").tag(2)
-                        Text("3").tag(3)
-                        Text("4").tag(4)
-                        Text("5").tag(5)
-                    }
-                    .pickerStyle(SegmentedPickerStyle())
-                    .padding(10)
+                    Text("Read Now")
+                        .font(.title2)
+                        .italic()
+                        .accentColor(.black)
                     
-                    .frame(width: 200)
+                    Image("cover1")
+                        .resizable()
+                        .scaledToFit()
                 }
+            })
+            .padding()
+            
+            Text("Mark for Later!")
+                .bold()
+                .padding(.bottom, 10)
+            
+            Button(action: { model.updateFavourite(forId: book.id) }) {
+                Image(systemName: book.isFavourite ? "star.fill" : "star")
+                    .resizable()
+                    .frame(width: 28, height: 28)
             }
-        
+            .accentColor(.yellow)
+            
+                Text("Rate \(book.title)")
+                    .padding(.top,20)
+                    .padding(.bottom,-10)
+                Picker("", selection: $rateSelection){
+                    Text("1").tag(1)
+                    Text("2").tag(2)
+                    Text("3").tag(3)
+                    Text("4").tag(4)
+                    Text("5").tag(5)
+                }
+                .pickerStyle(SegmentedPickerStyle())
+                .padding(10)
+                .frame(width: 200)
+            
+        }
+        .navigationBarTitle("\(book.title)")
     }
 }
 
 
+
 struct BookDetailView_Previews: PreviewProvider {
     static var previews: some View {
-        BookDetailView(bookName: "Amazing Words", bookImage: "cover1")
+        BookDetailView(book: Book())
+            .environmentObject(BookViewModel())
     }
 }

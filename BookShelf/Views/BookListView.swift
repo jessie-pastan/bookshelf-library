@@ -16,26 +16,32 @@ struct BookListView: View {
         
         NavigationView {
             ScrollView {
-                VStack {
-                    ForEach(0..<model.books.count, id: \.self){ index in
+                LazyVStack (alignment: .leading, spacing: 30){
+                    ForEach(model.books){ book in
                         NavigationLink(destination:
-                            BookDetailView(bookName: model.books[index].title, bookImage: model.books[index].image),
+                            BookDetailView(book: book),
                             
                         label: {
                             
-                            BookView(title: model.books[index].title, author: model.books[index].author, image: model.books[index].image)
+                           
+                            BookView(book: book)
+                                .padding([.leading,.trailing],20)
                             
                         })
-                       
-                            
+                        // The NavigationLink is a known workaround for an issue identified in iOS 14.5 where the navigation link pops the view as per these forum threads:
+                        // https://developer.apple.com/forums/thread/677333
+                        // https://forums.swift.org/t/14-5-beta3-navigationlink-unexpected-pop/45279
+                        
+                        NavigationLink(destination: EmptyView()) {
+                            EmptyView()
+                        }
                     }
-                    .scaledToFit()
-                    .padding()
-                    .offset(x:30)
                     
                 }
+                .padding(.top)
             }
             .navigationBarTitle("My Library")
+            
         }
     }
             
